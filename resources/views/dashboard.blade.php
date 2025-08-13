@@ -17,7 +17,7 @@
                     </form>
 
                     <!-- Table for Results -->
-                    <table class="mt-8 w-full">
+                    <table class="mt-8 w-full" id="image-table">
                         <thead>
                             <tr>
                                 <th>Image URL</th>
@@ -28,16 +28,15 @@
                         <tbody>
                             @foreach ($requests as $request)
                                 @foreach ($request->images as $image)
-                                    <tr>
+                                    <tr data-image-id="{{ $image->id }}">
                                         <td>{{ $image->url }}</td>
-                                        <td>{{ ucfirst($image->status) }}</td>
-                                        <td>{{ $image->processed_at ?? $image->created_at }}</td>
+                                        <td class="status">{{ ucfirst($image->status) }}</td>
+                                        <td class="timestamp">{{ $image->processed_at ?? $image->created_at }}</td>
                                     </tr>
                                 @endforeach
                             @endforeach
                         </tbody>
                     </table>
-
                     <!-- Filter by Status (Simple Form) -->
                     <form method="GET" action="{{ route('dashboard') }}" class="mt-4">
                         <select name="status">

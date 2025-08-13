@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\ImageProcessed;
 use App\Models\Image;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -32,6 +33,7 @@ class ProcessImage implements ShouldQueue
             'status' => $success ? 'processed' : 'failed',
             'processed_at' => now(),
         ]);
+        event(new ImageProcessed($this->image));
 
         // Simulate NodeJS service call 
         // In real: HTTP call to NodeJS endpoint
