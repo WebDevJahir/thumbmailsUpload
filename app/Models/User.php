@@ -46,4 +46,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function bulkRequests()
+    {
+        return $this->hasMany(BulkRequest::class);
+    }
 }
