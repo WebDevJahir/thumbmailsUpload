@@ -75,6 +75,7 @@ Migrate and seed database:
 
 ```bash
 php artisan migrate --seed
+php artisan db:seed --class=UserSeeder
 ```
 
 Install Sanctum & Broadcasting:
