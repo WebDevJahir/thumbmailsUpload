@@ -31,7 +31,7 @@ A **Laravel 12** backend paired with a **React** frontend for real-time image th
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/WebDevJahir/thumbnail-processor.git
+git clone https://github.com/WebDevJahir/thumbnailsUpload.git
 cd thumbnail-processor
 ```
 
