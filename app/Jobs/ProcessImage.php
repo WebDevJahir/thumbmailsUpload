@@ -2,11 +2,12 @@
 
 namespace App\Jobs;
 
-use App\Events\ImageProcessed;
 use App\Models\Image;
+use App\Events\ImageProcessed;
+use App\Notifications\ThumbnailsReady;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
@@ -23,10 +24,8 @@ class ProcessImage implements ShouldQueue
 
     public function handle()
     {
-        // Simulate processing delay (1-5 seconds)
         sleep(rand(1, 5));
 
-        // Simulate success/failure (80% success)
         $success = rand(1, 10) <= 8;
 
         $this->image->update([
@@ -35,7 +34,10 @@ class ProcessImage implements ShouldQueue
         ]);
         event(new ImageProcessed($this->image));
 
-        // Simulate NodeJS service call 
-        // In real: HTTP call to NodeJS endpoint
+        // Check if all images in the bulk request are processed
+        $bulkRequest = $this->image->bulkRequest;
+        if ($bulkRequest->images()->where('status', 'pending')->doesntExist()) {
+            $bulkRequest->user->notify(new ThumbnailsReady($bulkRequest));
+        }
     }
 }

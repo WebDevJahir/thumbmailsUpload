@@ -8,6 +8,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Support\Facades\Log;
 
 class ImageProcessed implements ShouldBroadcast
 {
@@ -30,6 +31,7 @@ class ImageProcessed implements ShouldBroadcast
         return [
             'image' => [
                 'id' => $this->image->id,
+                'bulk_request_id' => $this->image->bulk_request_id, // Add this
                 'url' => $this->image->url,
                 'status' => $this->image->status,
                 'processed_at' => $this->image->processed_at ? \Carbon\Carbon::parse($this->image->processed_at)->toDateTimeString() : null,
