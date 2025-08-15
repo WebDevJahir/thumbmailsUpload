@@ -31,7 +31,7 @@ A **Laravel 12** backend paired with a **React** frontend for real-time image th
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/thumbnail-processor.git
+git clone https://github.com/WebDevJahir/thumbnailsUpload.git
 cd thumbnail-processor
 ```
 
@@ -75,6 +75,7 @@ Migrate and seed database:
 
 ```bash
 php artisan migrate --seed
+php artisan db:seed --class=UserSeeder
 ```
 
 Install Sanctum & Broadcasting:
@@ -99,7 +100,8 @@ npm install
 Ensure Polaris compatibility:
 
 ```bash
-npm install @shopify/polaris@^10.0.0
+npm install react-router-dom axios @shopify/polaris @shopify/polaris-icons laravel-echo pusher-js
+npm install --save-dev @types/react @types/react-dom
 ```
 
 ### 4. Configure Pusher
