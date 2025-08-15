@@ -7,34 +7,54 @@ use App\Models\BulkRequest;
 use App\Models\Image;
 use App\Jobs\ProcessImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BulkRequestController extends Controller
 {
     public function store(Request $request)
     {
-        $user = $request->user();
-        $urls = array_filter(explode("\n", trim($request->input('urls'))));
-        $quota = match ($user->tier) {
-            'free' => 50,
-            'pro' => 100,
-            'enterprise' => 200,
-        };
+        $request->validate([
+            'urls' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $urls = array_filter(array_map('trim', explode("\n", $value)));
+                    $urlCount = count($urls);
 
-        if (count($urls) > $quota) {
-            return response()->json(['error' => "Exceeded quota: Max $quota URLs allowed."], 422);
-        }
+                    $user = Auth::user();
+                    if ($user->tier === 'free' && $urlCount > 50) {
+                        $fail('Free users can upload a maximum of 50 images at a time.');
+                    }
 
-        $bulkRequest = BulkRequest::create([
-            'user_id' => $user->id,
-            'image_count' => count($urls),
+                    if ($urlCount === 0) {
+                        $fail('Please provide at least one URL.');
+                    }
+
+                    $uniqueUrls = array_unique($urls);
+                    if (count($uniqueUrls) !== $urlCount) {
+                        $fail('Duplicate URLs are not allowed.');
+                    }
+
+                    foreach ($urls as $url) {
+                        if (!filter_var($url, FILTER_VALIDATE_URL) || !preg_match('/^https?:\/\//', $url)) {
+                            $fail("Invalid URL format: {$url}. URLs must start with http:// or https://");
+                        }
+                    }
+                },
+            ],
         ]);
 
-        foreach ($urls as $url) {
-            $image = Image::create([
-                'bulk_request_id' => $bulkRequest->id,
-                'url' => trim($url),
-            ]);
+        $urls = array_filter(array_map('trim', explode("\n", $request->urls)));
+        $user = Auth::user();
+        $bulkRequest = BulkRequest::create(
+            ['user_id' => $user->id, 'image_count' => count($urls)]
+        );
 
+        foreach ($urls as $url) {
+            $image = $bulkRequest->images()->create([
+                'url' => $url,
+                'status' => 'pending',
+            ]);
             $priority = match ($user->tier) {
                 'free' => 1,
                 'pro' => 2,
@@ -43,8 +63,9 @@ class BulkRequestController extends Controller
             ProcessImage::dispatch($image)->onQueue("priority-$priority");
         }
 
-        return response()->json(['success' => 'Request submitted for processing.', 'bulkRequest' => $bulkRequest]);
+        return response()->json(['message' => 'URLs submitted successfully'], 201);
     }
+
 
     public function index(Request $request)
     {
