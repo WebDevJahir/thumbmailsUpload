@@ -1,61 +1,184 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📸 Thumbnail Processing Dashboard
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A **Laravel 12** backend paired with a **React** frontend for real-time image thumbnail processing. Users can submit image URLs, monitor their processing status, and receive instant notifications via Pusher.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+-   Upload and process image URLs (one per line)
+-   Real-time status updates (Processed, Pending, Failed)
+-   Status filtering
+-   Notification dropdown for updates
+-   Responsive UI with Shopify Polaris
+-   Queue-based job processing
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Prerequisites
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   **Node.js** (v18.x or higher)
+-   **PHP** (v8.2 or higher)
+-   **Composer**
+-   **MySQL** or compatible DB
+-   **Git**
+-   **Pusher Account**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ⚙️ Installation
 
-## Laravel Sponsors
+### 1. Clone the Repository
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone https://github.com/your-username/thumbnail-processor.git
+cd thumbnail-processor
+```
 
-### Premium Partners
+### 2. Backend Setup (Laravel)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Install PHP dependencies:
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Copy and configure environment:
 
-## Code of Conduct
+```bash
+cp .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Edit `.env` and update:
 
-## Security Vulnerabilities
+```
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+PUSHER_APP_ID=your_pusher_app_id
+PUSHER_APP_KEY=your_pusher_app_key
+PUSHER_APP_SECRET=your_pusher_app_secret
+PUSHER_APP_CLUSTER=your_pusher_cluster
 
-## License
+APP_URL=http://localhost:8000
+SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Generate app key:
+
+```bash
+php artisan key:generate
+```
+
+Migrate and seed database:
+
+```bash
+php artisan migrate --seed
+```
+
+Install Sanctum & Broadcasting:
+
+```bash
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+
+composer require laravel/broadcasting
+php artisan vendor:publish --tag=laravel-assets
+```
+
+### 3. Frontend Setup (React + Vite)
+
+Install Node dependencies:
+
+```bash
+npm install
+```
+
+Ensure Polaris compatibility:
+
+```bash
+npm install @shopify/polaris@^10.0.0
+```
+
+### 4. Configure Pusher
+
+Sign up at [Pusher](https://pusher.com/) and get your app credentials.
+
+Ensure your `vite.config.js` includes:
+
+```js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+    plugins: [react()],
+    server: {
+        hmr: { host: "localhost" },
+    },
+});
+```
+
+### 5. Run the Project
+
+Start Laravel backend:
+
+```bash
+php artisan serve
+```
+
+Start React frontend:
+
+```bash
+npm run dev
+```
+
+Run queue worker (in a separate terminal):
+
+```bash
+php artisan queue:work --queue=priority-3,priority-2,priority-1
+```
+
+---
+
+## 🔐 Access the App
+
+Visit: [http://localhost:5173/login](http://localhost:5173/login)
+
+Use default credentials (e.g., `free@example.com`, password: `password`) or register a new user.
+
+---
+
+## 🧭 Usage
+
+-   **Login:** Access the dashboard with your credentials
+-   **Dashboard:** Paste image URLs (one per line), filter by status, view real-time updates and notifications
+-   **Logout:** Click the logout button in the header
+
+---
+
+## 🧪 Troubleshooting
+
+-   **404 Errors:** Ensure `APP_URL` in `.env` matches your Laravel server
+-   **Pusher Issues:** Check credentials and Pusher debug console
+-   **Polaris Errors:** Update to Polaris ^10.0.0 and clear cache:
+
+    ```bash
+    rm -rf node_modules/.vite
+    npm run dev
+    ```
+
+-   **Database Errors:** Verify with:
+
+    ```bash
+    php artisan migrate:status
+    ```
+
+---
+
+## 🙏 Acknowledgements
+
+-   Built with Laravel 12
+-   UI powered by Shopify Polaris
+-   Real-time events

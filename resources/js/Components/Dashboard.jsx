@@ -64,7 +64,6 @@ const Dashboard = () => {
             const response = await axios.get(
                 `/api/bulk-requests?status=${statusFilter}`
             );
-            console.log("Fetched data:", response.data);
             setRequests(response.data);
         } catch (err) {
             console.error("Failed to fetch requests", err.response?.data);
@@ -117,6 +116,11 @@ const Dashboard = () => {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+    };
+
     const rows = requests
         .flatMap((req) =>
             req.images
@@ -135,10 +139,20 @@ const Dashboard = () => {
                 row.length === 3 &&
                 (!statusFilter || row[1].toLowerCase() === statusFilter)
         );
-    console.log("Rows updated:", rows);
 
     return (
         <Page title="Dashboard">
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginBottom: 16,
+                }}
+            >
+                <Button destructive onClick={handleLogout}>
+                    Logout
+                </Button>
+            </div>
             {notifications.length > 0 && (
                 <Banner title="Notifications" status="info">
                     <List>
@@ -156,7 +170,7 @@ const Dashboard = () => {
                     </List>
                 </Banner>
             )}
-
+            <br />
             <Card sectioned>
                 <FormLayout>
                     <TextField
@@ -170,7 +184,7 @@ const Dashboard = () => {
                     </Button>
                 </FormLayout>
             </Card>
-
+            <br />
             <Card sectioned>
                 <Select
                     label="Filter by Status"
@@ -184,7 +198,7 @@ const Dashboard = () => {
                     onChange={setStatusFilter}
                 />
                 <DataTable
-                    key={requests.length} // Forces re-render on state change
+                    key={requests.length}
                     columnContentTypes={["text", "text", "text"]}
                     headings={["Image URL", "Status", "Timestamp"]}
                     rows={rows}
