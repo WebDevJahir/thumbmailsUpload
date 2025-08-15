@@ -99,7 +99,8 @@ npm install
 Ensure Polaris compatibility:
 
 ```bash
-npm install @shopify/polaris@^10.0.0
+npm install react-router-dom axios @shopify/polaris @shopify/polaris-icons laravel-echo pusher-js
+npm install --save-dev @types/react @types/react-dom
 ```
 
 ### 4. Configure Pusher
