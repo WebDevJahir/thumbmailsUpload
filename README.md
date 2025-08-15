@@ -74,7 +74,7 @@ php artisan key:generate
 Migrate and seed database:
 
 ```bash
-php artisan migrate --seed
+php artisan migrate
 php artisan db:seed --class=UserSeeder
 ```
 
