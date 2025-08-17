@@ -146,7 +146,7 @@ php artisan queue:work --queue=priority-3,priority-2,priority-1
 
 ## 🔐 Access the App
 
-Visit: [http://localhost:5173/login](http://localhost:5173/login)
+Visit: [http://localhost:5173/login](http://localhost:8000/login)
 
 Use default credentials (e.g., `free@example.com`, password: `password`) or register a new user.
 
