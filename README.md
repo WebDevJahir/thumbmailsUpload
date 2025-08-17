@@ -60,7 +60,13 @@ PUSHER_APP_ID=your_pusher_app_id
 PUSHER_APP_KEY=your_pusher_app_key
 PUSHER_APP_SECRET=your_pusher_app_secret
 PUSHER_APP_CLUSTER=your_pusher_cluster
-
+MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=2525
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_FROM_ADDRESS="no-reply@yourapp.com"
+MAIL_FROM_NAME="${APP_NAME}"
 APP_URL=http://localhost:8000
 SANCTUM_STATEFUL_DOMAINS=localhost,127.0.0.1
 ```
